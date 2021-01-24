@@ -40,7 +40,11 @@ int strcmp(char *p1, char *p2) {
  * si l'entrée est incorrecte
  */
 error_code strlen2(char *s) {
-    return ERROR;
+    int i = 0;
+    while(s[i] != '\0'){
+        i++;
+    }
+    return i;
 }
 
 /**
@@ -50,7 +54,25 @@ error_code strlen2(char *s) {
  * @return le nombre de lignes, ou -1 si une erreur s'est produite
  */
 error_code no_of_lines(FILE *fp) {
-    return ERROR;
+    int no_lines = 1;
+    FILE *nfp = fp;
+    fpos_t pos;
+    fgetpos(fp, &pos);
+    int line = fgetc(nfp);
+    if (nfp == NULL){
+        no_lines = -1;
+    } else if(line == EOF){
+        no_lines = 0;
+    } else {
+        while (line != EOF){
+            if (line == '\n'){
+                no_lines++;
+            }
+            line = fgetc(nfp);
+        }
+    }
+    fsetpos(fp, &pos);
+    return no_lines;
 }
 
 /**
@@ -101,8 +123,22 @@ error_code execute(char *machine_file, char *input) {
 
 int main() {
 // ous pouvez ajouter des tests pour les fonctions ici
+    char *temp = "22";
+    printf("%d", strlen2(temp));
+
+    printf("\n");
+    FILE *fp = fopen("../five_lines", "r");
+    printf("%d", no_of_lines(fp));
+    fclose(fp);
+
+    printf("\n");
+    FILE *fp2 = fopen("../six_lines", "r");
+    printf("%d", no_of_lines(fp2));
+    fclose(fp2);
 
     return 0;
+
+
 }
 
 // ༽つ۞﹏۞༼つ
