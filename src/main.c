@@ -108,7 +108,22 @@ error_code readline(FILE *fp, char **out, size_t max_len) {
  * @return nombre de bytes copiés ou une erreur s'il y a lieu
  */
 error_code memcpy2(void *dest, void *src, size_t len) {
-    return ERROR;
+    if(!src || !dest)
+    {
+        return ERROR;
+    }
+    else{
+        //code inspiré de geeksforgeeks.org/write-memcpy
+        char *d = (char *)dest;
+        char *s = (char *)src;
+        int no_bytes = 1;
+        for(int i=0; i<len; i++){
+            d[i] = s[i];
+            no_bytes++;
+        }
+        return no_bytes;
+    }
+
 }
 
 /**
@@ -158,6 +173,11 @@ int main() {
     printf("%s", *str);
     fclose(fp3);
 
+    printf("\n");
+    char *before[50];
+    char *after =  "bbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
+    memcpy2(before, after, 5);
+    printf("%s", before);
     return 0;
 
 }
