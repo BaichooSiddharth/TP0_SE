@@ -83,26 +83,20 @@ error_code no_of_lines(FILE *fp) {
  * @return le nombre de caractère ou ERROR si une erreur est survenue
  */
 error_code readline(FILE *fp, char **out, size_t max_len) {
-    char line[max_len+1];
     int no_chars = 0;
-
-    FILE *nfp_line = fp;
-    fpos_t pos;
-    fgetpos(fp, &pos);
-    char char_read = fgetc(nfp_line);
-    if(nfp_line == NULL){
+    char *line = malloc(sizeof(char) * max_len);
+    if (!fp) {
         return ERROR;
-    } else if (char_read == '\n'){
-        no_chars = 0;
     } else {
-        while (char_read != '\n'){
-            line[no_chars] = char_read;
+        char car = fgetc(fp);
+        while (car != EOF && car != '\n') {
+            line[no_chars] = car;
             no_chars++;
-            char_read = fgetc(nfp_line);
+            car = fgetc(fp);
         }
-    };
-    line[no_chars+1] = '\0';
-    out[0] = line;
+        line[no_chars] = '\0';
+        *out = line;
+    }
     return no_chars;
 }
 
@@ -160,6 +154,7 @@ int main() {
     char **str = malloc(sizeof (char*));
     FILE *fp3 = fopen("../five_lines", "r");
     printf("%d", readline(fp3, str, 10));
+    printf("\n");
     printf("%s", *str);
     fclose(fp3);
 
