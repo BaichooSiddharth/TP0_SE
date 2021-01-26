@@ -55,11 +55,10 @@ error_code strlen2(char *s) {
  */
 error_code no_of_lines(FILE *fp) {
     int no_lines = 1;
-    FILE *nfp = fp;
     fpos_t pos;
     fgetpos(fp, &pos);
-    int char_read = fgetc(nfp);
-    if (nfp == NULL){
+    int char_read = fgetc(fp);
+    if (fp == NULL){
         no_lines = -1;
     } else if(char_read == EOF){
         no_lines = 0;
@@ -68,7 +67,7 @@ error_code no_of_lines(FILE *fp) {
             if (char_read == '\n'){
                 no_lines++;
             }
-            char_read = fgetc(nfp);
+            char_read = fgetc(fp);
         }
     }
     fsetpos(fp, &pos);
@@ -114,8 +113,8 @@ error_code memcpy2(void *dest, void *src, size_t len) {
     }
     else{
         //code inspiré de geeksforgeeks.org/write-memcpy
-        char *d = (char *)dest;
-        char *s = (char *)src;
+        char *d = dest;
+        char *s = src;
         int no_bytes = 1;
         for(int i=0; i<len; i++){
             d[i] = s[i];
