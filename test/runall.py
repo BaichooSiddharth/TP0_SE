@@ -1,7 +1,7 @@
 import re
 import subprocess
 
-with open("./checks.c") as f:
+with open("checks.c") as f:
     string = f.read()
 
 matches = re.findall(r"test_.*_\d", string)
@@ -30,7 +30,7 @@ for test_case in matches:
 
 # valgrind
 def pts_lost_for_mem_leaks(val):
-    if len(re.findall(r"(definitely lost|indirectly lost): [1-9]\d* bytes in", val)) == 0:
+    if len(re.findall(r"(definitely lost|indirectly lost): [1-9]", val)) == 0:
         return 0
     return 15
 
