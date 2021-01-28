@@ -107,22 +107,15 @@ error_code readline(FILE *fp, char **out, size_t max_len) {
  * @return nombre de bytes copiés ou une erreur s'il y a lieu
  */
 error_code memcpy2(void *dest, void *src, size_t len) {
-    if(!src || !dest)
-    {
-        return ERROR;
+    //code inspiré de geeksforgeeks.org/write-memcpy
+    char *d = dest;
+    char *s = src;
+    int no_bytes = 1;
+    for(int i=0; i<len; i++){
+        d[i] = s[i];
+        no_bytes++;
     }
-    else{
-        //code inspiré de geeksforgeeks.org/write-memcpy
-        char *d = dest;
-        char *s = src;
-        int no_bytes = 1;
-        for(int i=0; i<len; i++){
-            d[i] = s[i];
-            no_bytes++;
-        }
-        return no_bytes;
-    }
-
+    return no_bytes;
 }
 
 /**
