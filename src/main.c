@@ -108,6 +108,7 @@ error_code readline(FILE *fp, char **out, size_t max_len) {
  */
 error_code memcpy2(void *dest, void *src, size_t len) {
     //code inspiré de geeksforgeeks.org/write-memcpy
+    //commentaire pour commit
     char *d = dest;
     char *s = src;
     int no_bytes = 1;
