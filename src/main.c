@@ -126,6 +126,51 @@ error_code memcpy2(void *dest, void *src, size_t len) {
  * @return la transition ou NULL en cas d'erreur
  */
 transition *parse_line(char *line, size_t len) {
+    char **line_read = malloc(sizeof (char*));
+    readline(line, line_read, len);
+    transition *tr = malloc(sizeof(transition));
+    char *current_state_r = malloc(sizeof(char)*3);
+    char *next_state_r = malloc(sizeof(char)*3);
+    tr->movement = 'D';
+    tr->write = '@';
+    if(!tr || !current_state_r || !next_state_r){
+        if(!tr){
+            free(tr);
+        }
+        if(!current_state_r){
+            free(current_state_r);
+        }
+        if(!next_state_r){
+            free(next_state_r);
+        }
+        return NULL;
+    } else {
+        if(*line_read[4]==','){
+            memcpy2(current_state_r, *line_read[1], 3);
+            tr->read = *line_read[5];
+            if(*line_read[10]=='R'){
+                next_state_r = "R";
+            } else if(*line_read[13] == ','){
+                memcpy2(next_state_r, *line_read[10], 3);
+            } else {
+                memcpy2(next_state_r, *line_read[10], 2);
+            }
+            tr->next_state = next_state_r;
+        } else {
+            memcpy2(current_state_r, *line_read[1], 2);
+            tr->read = *line_read[4];
+            if(*line_read[9]=='R'){
+                next_state_r = "R";
+            } else if(*line_read[12] == ','){
+                memcpy2(next_state_r, *line_read[9], 3);
+            } else {
+                memcpy2(next_state_r, *line_read[9], 2);
+            }
+        }
+    }
+    return tr;
+
+
     return NULL;
 }
 
