@@ -111,7 +111,7 @@ error_code memcpy2(void *dest, void *src, size_t len) {
     //commentaire pour commit
     char *d = dest;
     char *s = src;
-    int no_bytes = 1;
+    int no_bytes = 0;
     for(int i=0; i<len; i++){
         d[i] = s[i];
         no_bytes++;
@@ -153,10 +153,12 @@ int main() {
     printf("%d", no_of_lines(fp));
     fclose(fp);
 
+
     printf("\n");
     FILE *fp2 = fopen("../six_lines", "r");
     printf("%d", no_of_lines(fp2));
     fclose(fp2);
+
 
     printf("\n");
     char **str = malloc(sizeof (char*));
@@ -166,11 +168,13 @@ int main() {
     printf("%s", *str);
     fclose(fp3);
 
+
     printf("\n");
-    char *before[50];
-    char *after =  "bbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
-    memcpy2(before, after, 5);
+    char *before = malloc(sizeof(char) * 19);
+    char *after =  "bbbbbbbbbbbbbbbbb";
+    memcpy2(before, after, 19);
     printf("%s", before);
+    free(before);
     return 0;
 
 }
