@@ -144,25 +144,25 @@ transition *parse_line(char *line, size_t len) {
         return NULL;
     } else {
         if(line[4]==','){
-            memcpy2(current_state_r, line[1], 3);
+            memcpy2(current_state_r, line+1, 3);
             tr->read = line[5];
             if(line[10]=='R'){
                 next_state_r = "R";
             } else if(line[13] == ','){
-                memcpy2(next_state_r, line[10], 3);
+                memcpy2(next_state_r, line+10, 3);
             } else {
-                memcpy2(next_state_r, line[10], 2);
+                memcpy2(next_state_r, line+10, 2);
             }
             tr->next_state = next_state_r;
         } else {
-            memcpy2(current_state_r, line[1], 2);
+            memcpy2(current_state_r, line+1, 2);
             tr->read = line[4];
             if(line[9]=='R'){
                 next_state_r = "R";
             } else if(line[12] == ','){
-                memcpy2(next_state_r, line[9], 3);
+                memcpy2(next_state_r, line+9, 3);
             } else {
-                memcpy2(next_state_r, line[9], 2);
+                memcpy2(next_state_r, line+9, 2);
             }
         }
     }
