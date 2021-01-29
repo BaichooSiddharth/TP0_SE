@@ -138,14 +138,17 @@ transition *parse_line(char *line, size_t len) {
         for( tail = 2 ; tail <= 6 ; tail++){
             if( *(line+tail) == ',' ){
                 //TODO
+                char *current_state_read = malloc(sizeof(char)*(tail-head+1));
                 //le -1 c'est pour ne pas compter le char ','
-                memcpy2(&(resultat->current_state),(line+head),tail-head);
+                current_state_read[tail-head] = '\0';
+                memcpy2(current_state_read,(line+head),tail-head);
+                resultat->current_state = current_state_read;
                 break;
             }
         }
 
         tail++; //on passe au prochain char "read"
-        memcpy2(&(resultat->read),(line+tail),1);
+        resultat->read = line[tail];
 
         tail += 5;
         head = tail;
@@ -153,16 +156,20 @@ transition *parse_line(char *line, size_t len) {
         for( tail++ ; tail-head <= 5 ; tail++){
             if( *(line+tail) == ',' ){
                 //TODO
-                memcpy2(&(resultat->next_state),(line+head),tail-head);
+                char *next_state_read = malloc(sizeof(char)*(tail-head+1));
+                //le -1 c'est pour ne pas compter le char ','
+                next_state_read[tail-head] = '\0';
+                memcpy2(next_state_read,(line+head),tail-head);
+                resultat->next_state = next_state_read;
                 break;
             }
         }
 
         tail++;
-        memcpy2(&(resultat->write),(line+tail),1);
+        resultat->write = line[tail];
 
         tail += 2;
-        memcpy2(&(resultat->movement),(line+tail),1);
+        resultat->movement = line[tail];
 
         return resultat;
 
@@ -215,7 +222,23 @@ int main() {
     memcpy2(before, after, 19);
     printf("%s", before);
     free(before);
+
+    printf("\n");
+    char **str2 = malloc(sizeof (char*));
+    FILE *fp4 = fopen("../youre_gonna_go_far_kid", "r");
+    void *new_pointer = fp4+20;
+    fpos_t pos;
+    fgetpos(fp4, &pos);
+    readline(fp4, str2, 19);
+    readline(fp4, str2, 19);
+    readline(fp4, str2, 19);
+    readline(fp4, str2, 19);
+    printf("%s", *str2);
+    transition *tr = parse_line(*str2, 17);
     return 0;
+
+
+
 
 }
 
