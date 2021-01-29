@@ -83,7 +83,7 @@ error_code no_of_lines(FILE *fp) {
  */
 error_code readline(FILE *fp, char **out, size_t max_len) {
     int no_chars = 0;
-    char *line = malloc(sizeof(char) * max_len);
+    char *line = malloc(sizeof(char) * max_len+2);
     if (!fp) {
         return ERROR;
     } else {
@@ -199,6 +199,9 @@ transition *parse_line(char *line, size_t len) {
  */
 error_code execute(char *machine_file, char *input) {
     FILE *fp = fopen(machine_file, "r");
+    if(!fp){
+        return NULL;
+    }
     int no_lines = no_of_lines(fp);
     int length_word = strlen2(input);
     char *ruban = malloc((sizeof(char)*2*length_word));
@@ -217,7 +220,9 @@ error_code execute(char *machine_file, char *input) {
             int len = strlen2(*str_temp);
             table_transition[i-3] = parse_line(*str_temp, len);
         }
+        free(*str_temp);
     }
+    free(str_temp);
     fclose(fp);
     transition *current_trans;
     char read_char;
@@ -228,6 +233,7 @@ error_code execute(char *machine_file, char *input) {
             transition *dum = table_transition[i];
             if(!strcmp((dum->current_state), current)){
                 if((dum->read) == read_char){
+                    free(current);
                     current_trans = dum;
                     break;
                 }
@@ -252,21 +258,46 @@ error_code execute(char *machine_file, char *input) {
     }
 
     free(ruban);
-    free(str_temp);
-    for (int i=(no_lines-4); i>=0; i--){
+    for (int i=(no_lines-4); i>=4; i--){
+        char *current_state = table_transition[i]->current_state;
+        char *next_state = table_transition[i]->next_state;
+        table_transition[i]->read = NULL;
+        table_transition[i]->write = NULL;
+        table_transition[i]->movement = NULL;
         free(table_transition[i]);
+        free(current_state);
+        free(next_state);
     }
 
-    if(!strcmp("R", current)){
-        free(current);
-        return HAS_ERROR(-1);
-    } else if (!strcmp("A", current)){
-        free(current);
-        return HAS_NO_ERROR(1);
-    } else {
-        free(current);
-        return ERROR;
+    for(int i=2; i>0; i--){
+        char *current_state = table_transition[i]->current_state;
+        char *next_state = table_transition[i]->next_state;
+        table_transition[i]->read = NULL;
+        table_transition[i]->write = NULL;
+        table_transition[i]->movement = NULL;
+        free(table_transition[i]);
+        free(current_state);
+        free(next_state);
     }
+    free(table_transition[3]);
+
+
+
+
+    error_code ret;
+    int len_final = strlen2(current);
+    if(len_final>1){
+        ret =  ERROR;
+    } else {
+        if('R' ==  current){
+            ret =  HAS_ERROR(-1);
+        } else if ('A' == current){
+            ret =  HAS_NO_ERROR(1);
+        }
+    }
+
+
+    return ret;
 
 }
 
@@ -297,6 +328,8 @@ int main() {
     printf("%d", readline(fp3, str, 10));
     printf("\n");
     printf("%s", *str);
+    free(*str);
+    free(str);
     fclose(fp3);
 
 
@@ -310,7 +343,7 @@ int main() {
     printf("\n");
 
     printf("\n");
-    int val = execute("../youre_gonna_go_far_kid", "10");
+    int val = execute("../youre_gonna_go_far_kid", "  1");
     printf("%d", val);
     return 0;
 
