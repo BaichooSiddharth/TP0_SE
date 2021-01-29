@@ -253,16 +253,19 @@ error_code execute(char *machine_file, char *input) {
 
     free(ruban);
     free(str_temp);
+    for (int i=(no_lines-4); i>=0; i--){
+        free(table_transition[i]);
+    }
 
     if(!strcmp("R", current)){
+        free(current);
         return HAS_ERROR(-1);
-        free(current);
     } else if (!strcmp("A", current)){
+        free(current);
         return HAS_NO_ERROR(1);
-        free(current);
     } else {
-        return -1;
         free(current);
+        return NULL;
     }
 
 }
