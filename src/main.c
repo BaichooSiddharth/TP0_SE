@@ -265,7 +265,7 @@ error_code execute(char *machine_file, char *input) {
         return HAS_NO_ERROR(1);
     } else {
         free(current);
-        return NULL;
+        return ERROR;
     }
 
 }
