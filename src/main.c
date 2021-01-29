@@ -169,7 +169,15 @@ transition *parse_line(char *line, size_t len) {
         resultat->write = line[tail];
 
         tail += 2;
-        resultat->movement = line[tail];
+        char move;
+        if(line[tail] == 'D') {
+            move = 1;
+        }else if(line[tail] == 'G'){
+            move = -1;
+        } else {
+            move = 0
+        }
+        resultat->movement = move;
 
         return resultat;
 
@@ -234,7 +242,18 @@ int main() {
     readline(fp4, str2, 19);
     readline(fp4, str2, 19);
     printf("%s", *str2);
+    printf("\n");
+    readline(fp4, str2, 19);
+    printf("%s", *str2);
+    printf("\n");
+    readline(fp4, str2, 19);
+    printf("%s", *str2);
+    printf("\n");
+    readline(fp4, str2, 19);
+    printf("%s", *str2);
+    printf("\n");
     transition *tr = parse_line(*str2, 17);
+    fclose(fp4);
     return 0;
 
 
