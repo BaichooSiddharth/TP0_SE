@@ -175,7 +175,7 @@ transition *parse_line(char *line, size_t len) {
         }else if(line[tail] == 'G'){
             move = -1;
         } else {
-            move = 0
+            move = 0;
         }
         resultat->movement = move;
 
