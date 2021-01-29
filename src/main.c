@@ -200,19 +200,71 @@ transition *parse_line(char *line, size_t len) {
 error_code execute(char *machine_file, char *input) {
     FILE *fp = fopen(machine_file, "r");
     int no_lines = no_of_lines(fp);
+    int length_word = strlen2(input);
+    char *ruban = malloc((sizeof(char)*2*length_word));
+    memcpy2(ruban, input, length_word);
     transition *table_transition[no_lines-3];
     char **str_temp = malloc(sizeof(char *));
+    char *current = malloc (sizeof (char)*4);
     for (int i=0; i<no_lines; i++){
         readline(fp, str_temp, 19);
-        if(i<3){
+        if(i<3 && i>0){
             continue;
-        } else {
+        }else if(i==0){
+            memcpy2(current, *str_temp, 3);
+            current[2] = '\0';
+        }else {
             int len = strlen2(*str_temp);
             table_transition[i-3] = parse_line(*str_temp, len);
         }
     }
     fclose(fp);
-    return ERROR;
+    transition *current_trans;
+    char read_char;
+    int position = 0;
+    while(position > -1 && *current != 'R' && *current != 'A'){
+        read_char = ruban[position];
+        for (int i=0; i<no_lines-3; i++){
+            transition *dum = table_transition[i];
+            if(!strcmp((dum->current_state), current)){
+                if((dum->read) == read_char){
+                    current_trans = dum;
+                    break;
+                }
+            }
+        }
+        if(!current_trans){
+            return ERROR;
+        }
+        current = current_trans->next_state;
+        ruban[position] = current_trans->write;
+        int movement = (int)(current_trans->movement);
+        position = position + movement;
+        current_trans = NULL;
+        if(position > (length_word/2)){
+            char *temp = ruban;
+            length_word = length_word*2;
+            char *new = malloc((sizeof(char)*2*length_word));
+            memcpy2(new, temp, length_word);
+            ruban = new;
+            free(temp);
+        }
+    }
+
+    free(ruban);
+    free(str_temp);
+
+    if(!strcmp("R", current)){
+        return HAS_ERROR(-1);
+        free(current);
+    } else if (!strcmp("A", current)){
+        return HAS_NO_ERROR(1);
+        free(current);
+    } else {
+        return -1;
+        free(current);
+    }
+
 }
 
 // ATTENTION! TOUT CE QUI EST ENTRE LES BALISES ༽つ۞﹏۞༼つ SERA ENLEVÉ! N'AJOUTEZ PAS D'AUTRES ༽つ۞﹏۞༼つ
@@ -253,31 +305,10 @@ int main() {
     free(before);
 
     printf("\n");
-    char **str2 = malloc(sizeof (char*));
-    FILE *fp4 = fopen("../youre_gonna_go_far_kid", "r");
-    void *new_pointer = fp4+20;
-    fpos_t pos;
-    fgetpos(fp4, &pos);
-    readline(fp4, str2, 19);
-    readline(fp4, str2, 19);
-    readline(fp4, str2, 19);
-    readline(fp4, str2, 19);
-    printf("%s", *str2);
-    printf("\n");
-    readline(fp4, str2, 19);
-    printf("%s", *str2);
-    printf("\n");
-    readline(fp4, str2, 19);
-    printf("%s", *str2);
-    printf("\n");
-    readline(fp4, str2, 19);
-    printf("%s", *str2);
-    printf("\n");
-    transition *tr = parse_line(*str2, 17);
-    fclose(fp4);
 
     printf("\n");
-    execute("../youre_gonna_go_far_kid", "10");
+    int val = execute("../youre_gonna_go_far_kid", "10");
+    printf("%d", val);
     return 0;
 
 
