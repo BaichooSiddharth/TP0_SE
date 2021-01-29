@@ -200,15 +200,30 @@ transition *parse_line(char *line, size_t len) {
 error_code execute(char *machine_file, char *input) {
     FILE *fp = fopen(machine_file, "r");
     if(!fp){
-        return NULL;
+        return ERROR;
     }
     int no_lines = no_of_lines(fp);
     int length_word = strlen2(input);
     char *ruban = malloc((sizeof(char)*2*length_word));
+    if(!ruban){
+        fclose(fp);
+        return ERROR;
+    }
     memcpy2(ruban, input, length_word);
     transition *table_transition[no_lines-3];
     char **str_temp = malloc(sizeof(char *));
+    if(!str_temp){
+        fclose(fp);
+        free(ruban);
+        return ERROR;
+    }
     char *current = malloc (sizeof (char)*4);
+    if(!current){
+        fclose(fp);
+        free(ruban);
+        free(str_temp);
+        return ERROR;
+    }
     for (int i=0; i<no_lines; i++){
         readline(fp, str_temp, 19);
         if(i<3 && i>0){
@@ -261,10 +276,11 @@ error_code execute(char *machine_file, char *input) {
     for (int i=(no_lines-4); i>=4; i--){
         char *current_state = table_transition[i]->current_state;
         char *next_state = table_transition[i]->next_state;
-        table_transition[i]->read = NULL;
-        table_transition[i]->write = NULL;
-        table_transition[i]->movement = NULL;
+        table_transition[i]->read = '0';
+        table_transition[i]->write = '0';
+        table_transition[i]->movement = '0';
         free(table_transition[i]);
+        table_transition[i] = NULL;
         free(current_state);
         free(next_state);
     }
@@ -272,14 +288,16 @@ error_code execute(char *machine_file, char *input) {
     for(int i=2; i>0; i--){
         char *current_state = table_transition[i]->current_state;
         char *next_state = table_transition[i]->next_state;
-        table_transition[i]->read = NULL;
-        table_transition[i]->write = NULL;
-        table_transition[i]->movement = NULL;
+        table_transition[i]->read = '0';
+        table_transition[i]->write = '0';
+        table_transition[i]->movement = '0';
         free(table_transition[i]);
+        table_transition[i] = NULL;
         free(current_state);
         free(next_state);
     }
     free(table_transition[3]);
+    table_transition[3] = NULL;
 
 
 
@@ -289,9 +307,9 @@ error_code execute(char *machine_file, char *input) {
     if(len_final>1){
         ret =  ERROR;
     } else {
-        if('R' ==  current){
+        if('R' ==  *current){
             ret =  HAS_ERROR(-1);
-        } else if ('A' == current){
+        } else if ('A' == *current){
             ret =  HAS_NO_ERROR(1);
         }
     }
