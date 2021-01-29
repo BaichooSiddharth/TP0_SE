@@ -304,14 +304,12 @@ error_code execute(char *machine_file, char *input) {
 
     error_code ret;
     int len_final = strlen2(current);
-    if(len_final>1){
-        ret =  ERROR;
+    if(!strcmp("R", current)){
+        ret =  HAS_ERROR(-1);
+    } else if(!strcmp("A", current)) {
+        ret = HAS_NO_ERROR(1);
     } else {
-        if('R' ==  *current){
-            ret =  HAS_ERROR(-1);
-        } else if ('A' == *current){
-            ret =  HAS_NO_ERROR(1);
-        }
+        ret = ERROR;
     }
 
 
