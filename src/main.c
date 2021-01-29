@@ -132,13 +132,18 @@ transition *parse_line(char *line, size_t len) {
     } else {
 
         transition *resultat = malloc( sizeof(transition) );
+        if(!resultat){
+            return NULL;
+        }
         int head = 1; //on skip le premier char, qui est un '('
         int tail;
 
         for( tail = 2 ; tail <= 6 ; tail++){
             if( *(line+tail) == ',' ){
-                //TODO
                 char *current_state_read = malloc(sizeof(char)*(tail-head+1));
+                if(!current_state_read){
+                    return NULL;
+                }
                 //le -1 c'est pour ne pas compter le char ','
                 current_state_read[tail-head] = '\0';
                 memcpy2(current_state_read,(line+head),tail-head);
@@ -155,8 +160,10 @@ transition *parse_line(char *line, size_t len) {
 
         for( tail++ ; tail-head <= 5 ; tail++){
             if( *(line+tail) == ',' ){
-                //TODO
                 char *next_state_read = malloc(sizeof(char)*(tail-head+1));
+                if(!next_state_read){
+                    return NULL;
+                }
                 //le -1 c'est pour ne pas compter le char ','
                 next_state_read[tail-head] = '\0';
                 memcpy2(next_state_read,(line+head),tail-head);
@@ -191,6 +198,20 @@ transition *parse_line(char *line, size_t len) {
  * @return le code d'erreur
  */
 error_code execute(char *machine_file, char *input) {
+    FILE *fp = fopen(machine_file, "r");
+    int no_lines = no_of_lines(fp);
+    transition *table_transition[no_lines-3];
+    char **str_temp = malloc(sizeof(char *));
+    for (int i=0; i<no_lines; i++){
+        readline(fp, str_temp, 19);
+        if(i<3){
+            continue;
+        } else {
+            int len = strlen2(*str_temp);
+            table_transition[i-3] = parse_line(*str_temp, len);
+        }
+    }
+    fclose(fp);
     return ERROR;
 }
 
@@ -254,6 +275,9 @@ int main() {
     printf("\n");
     transition *tr = parse_line(*str2, 17);
     fclose(fp4);
+
+    printf("\n");
+    execute("../youre_gonna_go_far_kid", "10");
     return 0;
 
 
