@@ -126,6 +126,9 @@ error_code memcpy2(void *dest, void *src, size_t len) {
  * @return la transition ou NULL en cas d'erreur
  */
 transition *parse_line(char *line, size_t len) {
+    if(len < 16){
+        return NULL;
+    }
     transition *tr = malloc(sizeof(transition));
     char *current_state_r = malloc(sizeof(char)*3);
     char *next_state_r = malloc(sizeof(char)*3);
@@ -167,9 +170,6 @@ transition *parse_line(char *line, size_t len) {
         }
     }
     return tr;
-
-
-    return NULL;
 }
 
 /**
