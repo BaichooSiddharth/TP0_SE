@@ -191,6 +191,25 @@ transition *parse_line(char *line, size_t len) {
     }
 }
 
+/* Fonction qui copie un ruban et double la taille
+ *
+ * */
+char *doubler(char *ruban, int length){
+    char *temp = malloc(sizeof(char)*length);
+    memcpy2(temp, ruban, length);
+    char *newptr = realloc(ruban, length*2);
+    if(!newptr){
+        return NULL;
+    } else {
+        ruban = newptr;
+    }
+    memcpy2(ruban, temp, length);
+    for (int i = length; i<(2*length); i++){
+        ruban[length] = ' ' ;
+    }
+    free(temp);
+    return ruban;
+}
 /**
  * Ex.6: Execute la machine de turing dont la description est fournie
  * @param machine_file le fichier de la description
@@ -214,6 +233,7 @@ error_code execute(char *machine_file, char *input) {
         return ERROR;
     }
     memcpy2(ruban, input, length_word);
+    doubler(ruban , length_word);
     transition *table_transition[no_lines-3];
     char **str_temp = malloc(sizeof(char *));
     if(!str_temp){
@@ -251,7 +271,7 @@ error_code execute(char *machine_file, char *input) {
         for (int i=0; i<no_lines-3; i++){
             transition *dum = table_transition[i];
             if(!strcmp((dum->current_state), current)){
-                if(((dum->read) == read_char) || ((dum->read == ' ') && (read_char != '1')) || ((dum->read == ' ') && (read_char != '0'))){
+                if(((dum->read) == read_char) || (dum->read == ' ' && read_char==0)){
                     current_trans = dum;
                     break;
                 }
@@ -269,12 +289,14 @@ error_code execute(char *machine_file, char *input) {
         if(position >= (length_word)){
             char current_char = ruban[position];
             length_word = length_word*2;
-            char *newptr = realloc(ruban, length_word*2);
-            if(!newptr){
+            ruban = doubler(ruban, length_word);
+            if(!ruban){
                 return ERROR;
             } else {
-                ruban = newptr;
                 ruban[position] = current_char;
+            }
+            for(int i=(position+1); i<(length_word*2); i++){
+                ruban[i] = ' ';
             }
 
         }
