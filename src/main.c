@@ -242,7 +242,7 @@ error_code execute(char *machine_file, char *input) {
     transition *current_trans;
     char read_char;
     int position = 0;
-    while(position > -1 && *current != 'R' && *current != 'A'){
+    while(position > -1 && !strcmp(current, "R") && !strcmp(current, "A")){
         read_char = ruban[position];
         for (int i=0; i<no_lines-3; i++){
             transition *dum = table_transition[i];
@@ -300,8 +300,6 @@ error_code execute(char *machine_file, char *input) {
     table_transition[3] = NULL;
 
 
-
-
     error_code ret;
     int len_final = strlen2(current);
     if(!strcmp("R", current)){
@@ -311,7 +309,6 @@ error_code execute(char *machine_file, char *input) {
     } else {
         ret = ERROR;
     }
-
 
     return ret;
 
@@ -359,7 +356,7 @@ int main() {
     printf("\n");
 
     printf("\n");
-    int val = execute("../youre_gonna_go_far_kid", "  1");
+    int val = execute("../youre_gonna_go_far_kid", "");
     printf("%d", val);
     return 0;
 
