@@ -291,6 +291,19 @@ error_code execute(char *machine_file, char *input) {
             length_word = length_word*2;
             ruban = doubler(ruban, length_word);
             if(!ruban){
+                for(int i = no_lines-4; i>=0; i--){
+                    char *current_state_f = table_transition[i]->current_state;
+                    char *next_state_f = table_transition[i]->next_state;
+                    table_transition[i]->read = '0';
+                    table_transition[i]->write = '0';
+                    table_transition[i]->movement = '0';
+                    free(table_transition[i]);
+                    table_transition[i] = NULL;
+                    free(current_state_f);
+                    free(next_state_f);
+                }
+
+                free(table_transition);
                 return ERROR;
             } else {
                 ruban[position] = current_char;
@@ -394,12 +407,9 @@ int main() {
     printf("\n");
 
     printf("\n");
-    int val = execute("../youre_gonna_go_far_kid", "");
+    int val = execute("../youre_gonna_go_far_kid", " ");
     printf("%d", val);
     return 0;
-
-
-
 
 }
 
