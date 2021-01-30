@@ -204,6 +204,10 @@ error_code execute(char *machine_file, char *input) {
     }
     int no_lines = no_of_lines(fp);
     int length_word = strlen2(input);
+    if(length_word == 0){
+        length_word = 1;
+    };
+
     char *ruban = malloc((sizeof(char)*2*length_word));
     if(!ruban){
         fclose(fp);
@@ -242,13 +246,12 @@ error_code execute(char *machine_file, char *input) {
     transition *current_trans;
     char read_char;
     int position = 0;
-    while(position > -1 && !strcmp(current, "R") && !strcmp(current, "A")){
+    while(position > -1 && strcmp(current, "R") && strcmp(current, "A")){
         read_char = ruban[position];
         for (int i=0; i<no_lines-3; i++){
             transition *dum = table_transition[i];
             if(!strcmp((dum->current_state), current)){
-                if((dum->read) == read_char){
-                    free(current);
+                if(((dum->read) == read_char) || ((dum->read == ' ') && (read_char != '1')) || ((dum->read == ' ') && (read_char != '0'))){
                     current_trans = dum;
                     break;
                 }
@@ -257,59 +260,72 @@ error_code execute(char *machine_file, char *input) {
         if(!current_trans){
             return ERROR;
         }
+        free(current);
         current = current_trans->next_state;
         ruban[position] = current_trans->write;
         int movement = (int)(current_trans->movement);
         position = position + movement;
         current_trans = NULL;
-        if(position > (length_word/2)){
-            char *temp = ruban;
+        if(position >= (length_word)){
+            char current_char = ruban[position];
             length_word = length_word*2;
-            char *new = malloc((sizeof(char)*2*length_word));
-            memcpy2(new, temp, length_word);
-            ruban = new;
-            free(temp);
+            char *newptr = realloc(ruban, length_word*2);
+            if(!newptr){
+                return ERROR;
+            } else {
+                ruban = newptr;
+                ruban[position] = current_char;
+            }
+
         }
     }
 
+    char *final_state = malloc(sizeof(char)*5);
+    int lenfinal_state = strlen2(current);
+    memcpy2(final_state, current, lenfinal_state);
+    final_state[lenfinal_state] = '\0';
+
     free(ruban);
-    for (int i=(no_lines-4); i>=4; i--){
-        char *current_state = table_transition[i]->current_state;
-        char *next_state = table_transition[i]->next_state;
+    for (int i=(no_lines-4); i>=10; i--){
+        char *current_state_f = table_transition[i]->current_state;
+        char *next_state_f = table_transition[i]->next_state;
         table_transition[i]->read = '0';
         table_transition[i]->write = '0';
         table_transition[i]->movement = '0';
         free(table_transition[i]);
         table_transition[i] = NULL;
-        free(current_state);
-        free(next_state);
+        free(current_state_f);
+        free(next_state_f);
     }
 
-    for(int i=2; i>0; i--){
-        char *current_state = table_transition[i]->current_state;
-        char *next_state = table_transition[i]->next_state;
-        table_transition[i]->read = '0';
-        table_transition[i]->write = '0';
-        table_transition[i]->movement = '0';
-        free(table_transition[i]);
-        table_transition[i] = NULL;
-        free(current_state);
-        free(next_state);
+    for(int i=8; i>0; i--){
+        if(i%3 == 0 && i!=0){
+            free(table_transition[i]);
+            table_transition[i] = NULL;
+        } else {
+            char *current_state_f = table_transition[i]->current_state;
+            char *next_state_f = table_transition[i]->next_state;
+            table_transition[i]->read = '0';
+            table_transition[i]->write = '0';
+            table_transition[i]->movement = '0';
+            free(table_transition[i]);
+            table_transition[i] = NULL;
+            free(current_state_f);
+            free(next_state_f);
+        }
     }
-    free(table_transition[3]);
-    table_transition[3] = NULL;
 
 
     error_code ret;
-    int len_final = strlen2(current);
-    if(!strcmp("R", current)){
+    if(!strcmp("R", final_state)){
         ret =  HAS_ERROR(-1);
-    } else if(!strcmp("A", current)) {
+    } else if(!strcmp("A", final_state)) {
         ret = HAS_NO_ERROR(1);
     } else {
         ret = ERROR;
     }
 
+    free(final_state);
     return ret;
 
 }
